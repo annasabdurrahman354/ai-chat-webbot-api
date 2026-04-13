@@ -1,2 +1,2 @@
-# mercury-inception-webbot-api
+# ai-chat-webbot-api
 
