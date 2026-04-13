@@ -23,6 +23,17 @@ export function initDB() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(user_id) REFERENCES users(id)
     );
+
+    CREATE TABLE IF NOT EXISTS request_logs (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      token TEXT NOT NULL,
+      request_params TEXT,
+      response_data TEXT,
+      status TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
   `);
 
   // Seed default admin

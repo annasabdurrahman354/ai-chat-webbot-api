@@ -34,7 +34,26 @@ app.get('/api/message', requireApiToken, async (req: Request, res: Response) => 
   const messageParam = req.query.message ? String(req.query.message) : undefined;
   const plainTextParam = req.query.plainText !== 'false';
   
+  const user = (req as any).apiUser;
+  const token = (req as any).apiToken;
+
   const result = await sendMessage(undefined, messageParam, webSearchParam, plainTextParam);
+  
+  // Log the request
+  const logId = crypto.randomUUID();
+  try {
+    db.prepare('INSERT INTO request_logs (id, user_id, token, request_params, response_data, status) VALUES (?, ?, ?, ?, ?, ?)').run(
+      logId,
+      user.id,
+      token,
+      JSON.stringify({ message: messageParam, webSearch: webSearchParam, plainText: plainTextParam }),
+      JSON.stringify(result),
+      result.status
+    );
+  } catch (err) {
+    console.error('Failed to log request:', err);
+  }
+
   res.json(result);
 });
 
@@ -129,6 +148,34 @@ app.delete('/api/tokens/:id', requireDashboardAuth, (req: Request, res: Response
   // Soft delete or status update
   db.prepare("UPDATE tokens SET status = 'revoked' WHERE id = ?").run(tokenId);
   res.json({ message: 'Token revoked successfully' });
+});
+
+// -----------------------------
+// Request Logs Management
+// -----------------------------
+
+// View logs
+app.get('/api/logs', requireDashboardAuth, (req: Request, res: Response) => {
+  const user = (req as any).user;
+  if (user.role === 'admin') {
+    // Admin sees all logs
+    const logs = db.prepare(`
+      SELECT request_logs.*, users.username 
+      FROM request_logs 
+      JOIN users ON request_logs.user_id = users.id 
+      ORDER BY request_logs.created_at DESC
+    `).all();
+    return res.json(logs);
+  } else {
+    // User sees own logs
+    const logs = db.prepare(`
+      SELECT * 
+      FROM request_logs 
+      WHERE user_id = ? 
+      ORDER BY created_at DESC
+    `).all(user.id);
+    return res.json(logs);
+  }
 });
 
 // -----------------------------

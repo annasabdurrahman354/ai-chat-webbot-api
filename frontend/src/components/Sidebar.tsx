@@ -44,6 +44,18 @@ export default function Sidebar({ role, onLogout }: SidebarProps) {
           <span className="font-medium">API Tokens</span>
         </Link>
 
+        <Link 
+          to="/admin/logs" 
+          className={`flex items-center px-3 py-2.5 transition-all rounded-xl group ${
+            isActive('/admin/logs') 
+              ? 'text-blue-700 dark:text-blue-400 font-bold border-r-4 border-blue-700 dark:border-blue-400 bg-slate-200/50 dark:bg-slate-800/50' 
+              : 'text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+        >
+          <span className="material-symbols-outlined mr-3">receipt_long</span>
+          <span className="font-medium">Request Logs</span>
+        </Link>
+
         {/* Placeholder for Settings */}
         <div className="flex items-center px-3 py-2.5 text-slate-400 cursor-not-allowed opacity-50 rounded-xl">
           <span className="material-symbols-outlined mr-3">settings</span>

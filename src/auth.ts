@@ -47,6 +47,7 @@ export function requireApiToken(req: Request, res: Response, next: NextFunction)
   }
 
   (req as any).apiUser = userRecord;
+  (req as any).apiToken = token;
   next();
 }
 
