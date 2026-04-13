@@ -16,7 +16,7 @@ export async function sendMessage(url: string | undefined = process.env.TARGET_U
   try {
     console.log('Launching new isolated browser instance...');
     localBrowser = await chromium.launch({
-      headless: false, // Set to false so we can see the browser open
+      headless: true,
     });
     
     // Register this instance to the global tracker
@@ -49,7 +49,7 @@ export async function sendMessage(url: string | undefined = process.env.TARGET_U
     
     console.log('Waiting for response...');
     // Wait for the response to generate (wait 10 seconds)
-    await activePage.waitForTimeout(10000);
+    await activePage.waitForLoadState('networkidle');
     
     // Get the last chat message which has class "prose-chat"
     let responseText;
