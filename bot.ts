@@ -48,8 +48,10 @@ export async function sendMessage(url: string | undefined = process.env.TARGET_U
     console.log('Clicked submit button');
     
     console.log('Waiting for response...');
-    // Wait for the response to generate (wait 10 seconds)
-    await activePage.waitForLoadState('networkidle');
+
+    await activePage.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {
+      throw new Error('Bot response timeout: Page did not reach idle state within 20 seconds.');
+    });
     
     // Get the last chat message which has class "prose-chat"
     let responseText;
