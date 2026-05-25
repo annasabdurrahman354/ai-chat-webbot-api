@@ -47,17 +47,38 @@ ai-chat-webbot-api/
 
 ## 🚀 Panduan Memulai
 
-### 1. Instalasi
+### Ringkasan Perintah Cepat
+
+1. Pasang dependensi backend dan frontend
 
 ```bash
 npm install
+cd frontend && npm install
+```
+
+2. Install Playwright browser binaries (wajib untuk bot)
+
+```bash
+npx playwright install
+```
+
+3. Build frontend (produksi)
+
+```bash
+npm run build
+```
+
+4. Jalankan server
+
+```bash
+npm start
 ```
 
 ---
 
-### 2. Konfigurasi Environment
+### Konfigurasi Environment
 
-Buat file `.env` dan tambahkan variabel berikut:
+Buat file `.env` di root proyek dan tambahkan variabel berikut (contoh):
 
 ```env
 PORT=3000
@@ -67,17 +88,48 @@ JWT_SECRET=your_secret_key
 
 ---
 
-### 3. Menjalankan Aplikasi
+### First-time: Login Admin & Buat API Token
+
+Proyek ini men-seed satu akun admin default dengan kredensial:
+
+- Username: `admin`
+- Password: `password`
+
+Contoh langkah menggunakan `curl` untuk login, menyimpan cookie, dan membuat token baru:
+
+1) Login dan simpan cookie:
 
 ```bash
-# Jalankan Backend (Server & Bot)
-npm start
+curl -c cookies.txt -H "Content-Type: application/json" \
+   -X POST http://localhost:3000/api/auth/login \
+   -d '{"username":"admin","password":"password"}'
+```
 
-# Jalankan Frontend (Dasbor)
-cd frontend && npm run dev
+2) Buat token API (menggunakan cookie session yang tersimpan):
+
+```bash
+curl -b cookies.txt -H "Content-Type: application/json" \
+   -X POST http://localhost:3000/api/tokens \
+   -d '{}'
+```
+
+Response akan berisi token seperti:
+
+```json
+{ "message": "Token generated", "token": "sk_inv_..." }
+```
+
+Setelah menerima `sk_inv_...` token, gunakan header `Authorization: Bearer <token>` untuk memanggil endpoint bot, mis.:
+
+```bash
+curl -H "Authorization: Bearer sk_inv_..." \
+   "http://localhost:3000/api/message?message=Hello"
 ```
 
 ---
+
+Jika Anda lebih suka menggunakan GUI, jalankan frontend dengan `npm start` dan buka dasbor untuk membuat/revoke token dari halaman `Tokens`.
+
 
 ## 🛠️ Teknologi Utama
 

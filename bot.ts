@@ -16,7 +16,7 @@ export async function sendMessage(url: string | undefined = process.env.TARGET_U
   try {
     console.log('Launching new isolated browser instance...');
     localBrowser = await chromium.launch({
-      headless: true,
+      headless: false,
     });
     
     // Register this instance to the global tracker
